@@ -1,14 +1,26 @@
 package me.weekbelt.domain.department.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.UUID;
 import me.weekbelt.domain.department.service.ClientDepartmentService;
 import me.weekbelt.persistence.PhoneType;
 import me.weekbelt.persistence.department.dto.DepartmentCreateRequest;
+import me.weekbelt.persistence.department.dto.DepartmentResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +31,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -58,38 +71,43 @@ class ClientDepartmentControllerTest {
             .phoneType(PhoneType.INWARD_DIALING)
             .build();
 
-        // when
-        String content = objectMapper.writeValueAsString(departmentCreateRequest);
-        System.out.println(content);
+        DepartmentResponse departmentResponse = DepartmentResponse.builder()
+            .id(UUID.randomUUID().toString())
+            .name("수지구청")
+            .number("1234")
+            .phoneType(PhoneType.INWARD_DIALING)
+            .build();
 
+        given(clientDepartmentService.save(any())).willReturn(departmentResponse);
+
+        // when
         ResultActions resultActions = mockMvc.perform(post(BASE_URL)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(content));
+            .content(objectMapper.writeValueAsString(departmentCreateRequest)));
 
         // then
-//        RestDocumentationResultHandler document = document("department",
-//            preprocessRequest(prettyPrint()),
-//            preprocessResponse(prettyPrint()),
-//            requestFields(
-//                fieldWithPath("name").description("부서명"),
-//                fieldWithPath("number").description("부서 번호"),
-//                fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)")
-//            ),
-//            responseFields(
-//                fieldWithPath("id").description("부서의 식별 id"),
-//                fieldWithPath("name").description("부서명"),
-//                fieldWithPath("number").description("부서 번호"),
-//                fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)")
-//            ));
-//
-//        resultActions
-//            .andDo(document)
-//            .andExpect(status().isCreated())
-////            .andExpect(jsonPath("id").value(""))
-//            .andExpect(jsonPath("name").value("수지구청"))
-//            .andExpect(jsonPath("number").value("1234"))
-//            .andExpect(jsonPath("phoneType").value("INWARD_DIALING"))
-//        ;
+        RestDocumentationResultHandler document = document("department",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestFields(
+                fieldWithPath("name").description("부서명"),
+                fieldWithPath("number").description("부서 번호"),
+                fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)")
+            ),
+            responseFields(
+                fieldWithPath("id").description("부서의 식별 id"),
+                fieldWithPath("name").description("부서명"),
+                fieldWithPath("number").description("부서 번호"),
+                fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)")
+            ));
+
+        resultActions
+            .andDo(document)
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("id").isNotEmpty())
+            .andExpect(jsonPath("name").value("수지구청"))
+            .andExpect(jsonPath("number").value("1234"))
+            .andExpect(jsonPath("phoneType").value("INWARD_DIALING"));
     }
 
     @Test
@@ -110,5 +128,4 @@ class ClientDepartmentControllerTest {
         resultActions
             .andExpect(status().is4xxClientError());
     }
-
 }
