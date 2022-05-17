@@ -22,4 +22,6 @@ public class DepartmentCreateRequest {
 
     @NotNull
     private PhoneType phoneType;
+
+    private String parentId;
 }
