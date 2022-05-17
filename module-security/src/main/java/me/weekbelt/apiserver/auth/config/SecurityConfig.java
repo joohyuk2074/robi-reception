@@ -10,10 +10,13 @@ import me.weekbelt.apiserver.auth.TokenProvider;
 import me.weekbelt.apiserver.auth.common.AuthenticationFailureHandlerImpl;
 import me.weekbelt.apiserver.auth.common.AuthenticationSuccessHandlerImpl;
 import me.weekbelt.apiserver.auth.common.JwtAuthenticationEntryPoint;
+import me.weekbelt.apiserver.auth.factory.UrlResourcesMapFactoryBean;
 import me.weekbelt.apiserver.auth.filter.AuthenticationFilter;
 import me.weekbelt.apiserver.auth.filter.JwtAuthenticationFilter;
+import me.weekbelt.apiserver.auth.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import me.weekbelt.apiserver.auth.provider.AuthenticationProviderImpl;
 import me.weekbelt.apiserver.auth.service.MemberService;
+import me.weekbelt.apiserver.auth.service.SecurityResourcesService;
 import me.weekbelt.auth.service.MemberDataService;
 import me.weekbelt.auth.service.MemberRoleDataService;
 import me.weekbelt.auth.service.RoleDataService;
@@ -35,6 +38,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -55,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ObjectMapper objectMapper;
 
-//    private final SecurityResourceService securityResourceService;
+    private final SecurityResourcesService securityResourcesService;
 
 
     @Override
@@ -148,10 +152,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public FilterSecurityInterceptor customFilterSecurityInterceptor() throws Exception {
         FilterSecurityInterceptor filterSecurityInterceptor = new FilterSecurityInterceptor();
-//        filterSecurityInterceptor.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
+        filterSecurityInterceptor.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
         filterSecurityInterceptor.setAccessDecisionManager(affirmativeBased());
         filterSecurityInterceptor.setAuthenticationManager(authenticationManager());
         return filterSecurityInterceptor;
+    }
+
+    private FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() {
+        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean().getObject(), securityResourcesService);
+    }
+
+    private UrlResourcesMapFactoryBean urlResourcesMapFactoryBean() {
+        UrlResourcesMapFactoryBean urlResourcesMapFactoryBean = new UrlResourcesMapFactoryBean();
+        urlResourcesMapFactoryBean.setSecurityResourcesService(securityResourcesService);
+        return urlResourcesMapFactoryBean;
     }
 
     private AccessDecisionManager affirmativeBased() {
@@ -161,8 +175,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
         List<AccessDecisionVoter<?>> accessDecisionVoters = new ArrayList<>();
         accessDecisionVoters.add(rolVoter());
-
-//        return List.of(new RoleVoter());
         return accessDecisionVoters;
     }
 
