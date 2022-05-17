@@ -18,6 +18,7 @@ public class DepartmentMapper {
             .id(UUID.randomUUID().toString())
             .name(departmentCreateRequest.getName())
             .phone(phone)
+            .branchId(departmentCreateRequest.getBranchId())
             .build();
     }
 
@@ -27,6 +28,7 @@ public class DepartmentMapper {
             .name(department.getName())
             .number(department.getPhone().getNumber())
             .phoneType(department.getPhone().getPhoneType())
+            .branchId(department.getBranchId())
             .build();
     }
 }

@@ -1,8 +1,8 @@
-package me.weekbelt.domain.department.controller;
+package me.weekbelt.apiserver.department.controller;
 
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import me.weekbelt.domain.department.service.ClientDepartmentService;
+import me.weekbelt.apiserver.department.service.DepartmentService;
 import me.weekbelt.persistence.department.dto.DepartmentCreateRequest;
 import me.weekbelt.persistence.department.dto.DepartmentResponse;
 import org.springframework.http.HttpStatus;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/admin")
-public class ClientDepartmentController {
+public class DepartmentController {
 
-    private final ClientDepartmentService departmentService;
+    private final DepartmentService departmentService;
 
     @PostMapping("/v1/departments")
     @ResponseStatus(code = HttpStatus.CREATED)

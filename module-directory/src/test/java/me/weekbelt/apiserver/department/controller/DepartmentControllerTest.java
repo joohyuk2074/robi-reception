@@ -1,4 +1,4 @@
-package me.weekbelt.domain.department.controller;
+package me.weekbelt.apiserver.department.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
-import me.weekbelt.domain.department.service.ClientDepartmentService;
+import me.weekbelt.apiserver.department.service.DepartmentService;
 import me.weekbelt.persistence.PhoneType;
 import me.weekbelt.persistence.department.dto.DepartmentCreateRequest;
 import me.weekbelt.persistence.department.dto.DepartmentResponse;
@@ -40,7 +40,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 
 @WebMvcTest
 @ExtendWith({RestDocumentationExtension.class})
-class ClientDepartmentControllerTest {
+class DepartmentControllerTest {
 
     private static final String BASE_URL = "/admin/v1/departments";
 
@@ -48,7 +48,7 @@ class ClientDepartmentControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ClientDepartmentService clientDepartmentService;
+    private DepartmentService departmentService;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -69,6 +69,8 @@ class ClientDepartmentControllerTest {
             .name("수지구청")
             .number("1234")
             .phoneType(PhoneType.INWARD_DIALING)
+            .parentId("parentDepartmentId")
+            .branchId("test")
             .build();
 
         DepartmentResponse departmentResponse = DepartmentResponse.builder()
@@ -76,9 +78,10 @@ class ClientDepartmentControllerTest {
             .name("수지구청")
             .number("1234")
             .phoneType(PhoneType.INWARD_DIALING)
+            .branchId("test")
             .build();
 
-        given(clientDepartmentService.save(any())).willReturn(departmentResponse);
+        given(departmentService.save(any())).willReturn(departmentResponse);
 
         // when
         ResultActions resultActions = mockMvc.perform(post(BASE_URL)
@@ -92,13 +95,16 @@ class ClientDepartmentControllerTest {
             requestFields(
                 fieldWithPath("name").description("부서명"),
                 fieldWithPath("number").description("부서 번호"),
-                fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)")
+                fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)"),
+                fieldWithPath("parentId").description("상위 부서 식별자 ID"),
+                fieldWithPath("branchId").description("브랜치 ID")
             ),
             responseFields(
                 fieldWithPath("id").description("부서의 식별 id"),
                 fieldWithPath("name").description("부서명"),
                 fieldWithPath("number").description("부서 번호"),
-                fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)")
+                fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)"),
+                fieldWithPath("branchId").description("브랜치 ID")
             ));
 
         resultActions
@@ -107,7 +113,8 @@ class ClientDepartmentControllerTest {
             .andExpect(jsonPath("id").isNotEmpty())
             .andExpect(jsonPath("name").value("수지구청"))
             .andExpect(jsonPath("number").value("1234"))
-            .andExpect(jsonPath("phoneType").value("INWARD_DIALING"));
+            .andExpect(jsonPath("phoneType").value("INWARD_DIALING"))
+            .andExpect(jsonPath("branchId").value("test"));
     }
 
     @Test

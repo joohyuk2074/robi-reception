@@ -22,4 +22,6 @@ public class DepartmentTree {
     private String descendant;
 
     private Integer depth;
+
+    private String branchId;
 }

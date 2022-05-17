@@ -24,10 +24,13 @@ public class Department {
     @Embedded
     private Phone phone;
 
+    private String branchId;
+
     @Builder
-    public Department(String id, String name, Phone phone) {
+    public Department(String id, String name, Phone phone, String branchId) {
         this.id = id;
         this.name = name;
         this.phone = phone;
+        this.branchId = branchId;
     }
 }

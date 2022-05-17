@@ -19,4 +19,6 @@ public class DepartmentResponse {
     private String number;
 
     private PhoneType phoneType;
+
+    private String branchId;
 }
