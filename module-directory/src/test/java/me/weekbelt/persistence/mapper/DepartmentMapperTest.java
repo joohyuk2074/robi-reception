@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import me.weekbelt.persistence.PhoneType;
 import me.weekbelt.persistence.department.Department;
-import me.weekbelt.persistence.department.dto.DepartmentCreateRequest;
+import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

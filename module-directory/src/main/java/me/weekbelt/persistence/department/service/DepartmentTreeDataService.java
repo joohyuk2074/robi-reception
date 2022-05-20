@@ -22,4 +22,8 @@ public class DepartmentTreeDataService {
     public void saveAll(List<DepartmentTree> departmentTrees) {
         departmentTreeRepository.saveAll(departmentTrees);
     }
+
+    public List<DepartmentTree> getByAncestorAndDepth(String parentDepartmentId, int depth) {
+        return departmentTreeRepository.findByAncestorAndDepth(parentDepartmentId, depth);
+    }
 }

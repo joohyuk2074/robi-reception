@@ -2,9 +2,9 @@ package me.weekbelt.apiserver.department.controller;
 
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
+import me.weekbelt.apiserver.department.dto.DepartmentResponse;
 import me.weekbelt.apiserver.department.service.DepartmentService;
-import me.weekbelt.persistence.department.dto.DepartmentCreateRequest;
-import me.weekbelt.persistence.department.dto.DepartmentResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

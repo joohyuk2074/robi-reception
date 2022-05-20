@@ -19,8 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import me.weekbelt.apiserver.department.service.DepartmentService;
 import me.weekbelt.persistence.PhoneType;
-import me.weekbelt.persistence.department.dto.DepartmentCreateRequest;
-import me.weekbelt.persistence.department.dto.DepartmentResponse;
+import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
+import me.weekbelt.apiserver.department.dto.DepartmentResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,11 +38,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-@WebMvcTest
+@WebMvcTest(DepartmentController.class)
 @ExtendWith({RestDocumentationExtension.class})
 class DepartmentControllerTest {
 
-    private static final String BASE_URL = "/admin/v1/departments";
+    private static final String DEPARTMENT_BASE_URL = "/admin/v1/departments";
 
     @Autowired
     private MockMvc mockMvc;
@@ -84,12 +84,23 @@ class DepartmentControllerTest {
         given(departmentService.save(any())).willReturn(departmentResponse);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post(BASE_URL)
+        ResultActions resultActions = mockMvc.perform(post(DEPARTMENT_BASE_URL)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(objectMapper.writeValueAsString(departmentCreateRequest)));
 
         // then
-        RestDocumentationResultHandler document = document("department",
+        resultActions
+            .andDo(getCreateDepartmentApiDocument())
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("id").isNotEmpty())
+            .andExpect(jsonPath("name").value("수지구청"))
+            .andExpect(jsonPath("number").value("1234"))
+            .andExpect(jsonPath("phoneType").value("INWARD_DIALING"))
+            .andExpect(jsonPath("branchId").value("test"));
+    }
+
+    private RestDocumentationResultHandler getCreateDepartmentApiDocument() {
+        return document("department",
             preprocessRequest(prettyPrint()),
             preprocessResponse(prettyPrint()),
             requestFields(
@@ -106,15 +117,6 @@ class DepartmentControllerTest {
                 fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)"),
                 fieldWithPath("branchId").description("브랜치 ID")
             ));
-
-        resultActions
-            .andDo(document)
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("id").isNotEmpty())
-            .andExpect(jsonPath("name").value("수지구청"))
-            .andExpect(jsonPath("number").value("1234"))
-            .andExpect(jsonPath("phoneType").value("INWARD_DIALING"))
-            .andExpect(jsonPath("branchId").value("test"));
     }
 
     @Test

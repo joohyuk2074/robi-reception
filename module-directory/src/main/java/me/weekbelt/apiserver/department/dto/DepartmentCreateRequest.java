@@ -1,4 +1,4 @@
-package me.weekbelt.persistence.department.dto;
+package me.weekbelt.apiserver.department.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

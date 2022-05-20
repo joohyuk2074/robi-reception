@@ -3,8 +3,8 @@ package me.weekbelt.persistence.mapper;
 import java.util.UUID;
 import me.weekbelt.persistence.Phone;
 import me.weekbelt.persistence.department.Department;
-import me.weekbelt.persistence.department.dto.DepartmentCreateRequest;
-import me.weekbelt.persistence.department.dto.DepartmentResponse;
+import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
+import me.weekbelt.apiserver.department.dto.DepartmentResponse;
 
 public class DepartmentMapper {
 

@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface DepartmentTreeRepository extends JpaRepository<DepartmentTree, String> {
 
     List<DepartmentTree> findByDescendant(String descendant);
+
+    List<DepartmentTree> findByAncestorAndDepth(String ancestor, int depth);
 }

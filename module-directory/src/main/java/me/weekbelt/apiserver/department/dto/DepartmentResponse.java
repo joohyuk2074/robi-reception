@@ -1,4 +1,4 @@
-package me.weekbelt.persistence.department.dto;
+package me.weekbelt.apiserver.department.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
