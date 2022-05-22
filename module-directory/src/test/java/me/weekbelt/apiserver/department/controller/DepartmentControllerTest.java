@@ -1,5 +1,6 @@
 package me.weekbelt.apiserver.department.controller;
 
+import static java.util.Collections.EMPTY_LIST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -82,6 +83,7 @@ class DepartmentControllerTest {
             .number("1234")
             .phoneType(PhoneType.INWARD_DIALING)
             .branchId("test")
+            .synonyms(EMPTY_LIST)
             .build();
 
         given(departmentService.save(any())).willReturn(departmentResponse);
@@ -118,7 +120,8 @@ class DepartmentControllerTest {
                 fieldWithPath("name").description("부서명"),
                 fieldWithPath("number").description("부서 번호"),
                 fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)"),
-                fieldWithPath("branchId").description("브랜치 ID")
+                fieldWithPath("branchId").description("브랜치 ID"),
+                fieldWithPath("synonyms").description("동의어 리스트")
             ));
     }
 
@@ -172,7 +175,8 @@ class DepartmentControllerTest {
                 fieldWithPath("name").description("부서명"),
                 fieldWithPath("number").description("부서 번호"),
                 fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)"),
-                fieldWithPath("branchId").description("브랜치 ID")
+                fieldWithPath("branchId").description("브랜치 ID"),
+                fieldWithPath("synonyms").description("동의어 리스트")
             ));
     }
 

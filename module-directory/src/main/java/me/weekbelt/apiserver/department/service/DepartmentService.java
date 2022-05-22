@@ -2,15 +2,16 @@ package me.weekbelt.apiserver.department.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
 import me.weekbelt.apiserver.department.dto.DepartmentResponse;
 import me.weekbelt.apiserver.department.dto.DepartmentUpdateRequest;
 import me.weekbelt.persistence.department.Department;
+import me.weekbelt.persistence.department.DepartmentSynonym;
 import me.weekbelt.persistence.department.DepartmentTree;
 import me.weekbelt.persistence.department.service.DepartmentDataService;
+import me.weekbelt.persistence.department.service.DepartmentSynonymDataService;
 import me.weekbelt.persistence.department.service.DepartmentTreeDataService;
 import me.weekbelt.persistence.mapper.DepartmentMapper;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ public class DepartmentService {
     private final DepartmentDataService departmentDataService;
 
     private final DepartmentTreeDataService departmentTreeDataService;
+
+    private final DepartmentSynonymDataService departmentSynonymDataService;
 
     @Transactional
     public DepartmentResponse save(DepartmentCreateRequest departmentCreateRequest) {
@@ -76,6 +79,14 @@ public class DepartmentService {
     public DepartmentResponse addSynonyms(String departmentId, List<String> synonyms) {
         Department department = departmentDataService.getById(departmentId);
         department.addSynonyms(synonyms);
+        return DepartmentMapper.toDepartmentResponse(department);
+    }
+
+    @Transactional
+    public DepartmentResponse deleteSynonym(String departmentId, String synonymId) {
+        Department department = departmentDataService.getById(departmentId);
+        DepartmentSynonym departmentSynonym = departmentSynonymDataService.getById(synonymId);
+        department.removeSynonym(departmentSynonym);
         return DepartmentMapper.toDepartmentResponse(department);
     }
 }

@@ -23,5 +23,5 @@ public class DepartmentResponse {
 
     private String branchId;
 
-    private List<String> synonyms;
+    private List<DepartmentSynonymResponse> synonyms;
 }

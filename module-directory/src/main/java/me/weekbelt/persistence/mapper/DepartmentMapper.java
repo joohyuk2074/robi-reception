@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
 import me.weekbelt.apiserver.department.dto.DepartmentResponse;
+import me.weekbelt.apiserver.department.dto.DepartmentSynonymResponse;
 import me.weekbelt.persistence.Phone;
 import me.weekbelt.persistence.department.Department;
 import me.weekbelt.persistence.department.DepartmentSynonym;
@@ -27,10 +28,10 @@ public class DepartmentMapper {
     }
 
     public static DepartmentResponse toDepartmentResponse(Department department) {
-        List<String> synonyms = new ArrayList<>();
+        List<DepartmentSynonymResponse> synonyms = new ArrayList<>();
         if (!ObjectUtils.isEmpty(department.getDepartmentSynonyms())) {
             synonyms = department.getDepartmentSynonyms().stream()
-                .map(DepartmentSynonym::getSynonym)
+                .map(DepartmentMapper::toDepartmentSynonymResponse)
                 .toList();
         }
 
@@ -41,6 +42,13 @@ public class DepartmentMapper {
             .phoneType(department.getPhone().getPhoneType())
             .branchId(department.getBranchId())
             .synonyms(synonyms)
+            .build();
+    }
+
+    private static DepartmentSynonymResponse toDepartmentSynonymResponse(DepartmentSynonym departmentSynonym) {
+        return DepartmentSynonymResponse.builder()
+            .id(departmentSynonym.getId())
+            .synonym(departmentSynonym.getSynonym())
             .build();
     }
 }

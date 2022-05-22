@@ -7,9 +7,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode(exclude = {"id", "department"})
 @Getter
 @NoArgsConstructor
 @Entity
@@ -21,14 +23,18 @@ public class DepartmentSynonym {
     @Column(nullable = false)
     private String synonym;
 
+    @Column
+    private String branchId;
+
     @JoinColumn(name = "department_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Department department;
 
     @Builder
-    public DepartmentSynonym(String id, String synonym) {
+    public DepartmentSynonym(String id, String synonym, String branchId) {
         this.id = id;
         this.synonym = synonym;
+        this.branchId = branchId;
     }
 
     public void setDepartment(Department department) {

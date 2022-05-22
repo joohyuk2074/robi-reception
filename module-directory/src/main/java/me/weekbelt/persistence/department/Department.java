@@ -80,4 +80,8 @@ public class Department {
         departmentSynonym.setDepartment(this);
         return departmentSynonym;
     }
+
+    public void removeSynonym(DepartmentSynonym departmentSynonym) {
+        this.getDepartmentSynonyms().remove(departmentSynonym);
+    }
 }

@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.UUID;
 import me.weekbelt.apiserver.department.dto.DepartmentResponse;
+import me.weekbelt.apiserver.department.dto.DepartmentSynonymResponse;
 import me.weekbelt.apiserver.directory.dto.DirectoryResponse;
 import me.weekbelt.apiserver.directory.service.DirectoryService;
 import me.weekbelt.persistence.PhoneType;
@@ -86,17 +87,29 @@ class DirectoryControllerTest {
                 fieldWithPath("departmentResponses.[0].name").description("부서명"),
                 fieldWithPath("departmentResponses.[0].number").description("부서 번호"),
                 fieldWithPath("departmentResponses.[0].phoneType").description("부서 번호 타입(내선, 외선, 그룹)"),
-                fieldWithPath("departmentResponses.[0].branchId").description("브랜치 ID"))
+                fieldWithPath("departmentResponses.[0].branchId").description("브랜치 ID"),
+                fieldWithPath("departmentResponses.[0].synonyms.[0].id").description("부서 동의어 식별 ID"),
+                fieldWithPath("departmentResponses.[0].synonyms.[0].synonym").description("부서 동의어"))
         );
     }
 
     private DirectoryResponse createDirectoryResponse() {
+        DepartmentSynonymResponse 경제도시 = DepartmentSynonymResponse.builder()
+            .id(UUID.randomUUID().toString())
+            .synonym("경제도시")
+            .build();
         DepartmentResponse 경제도시국 = DepartmentResponse.builder()
             .id(UUID.randomUUID().toString())
             .name("경제도시국")
             .number("1234")
             .phoneType(PhoneType.INWARD_DIALING)
             .branchId("test")
+            .synonyms(List.of(경제도시))
+            .build();
+
+        DepartmentSynonymResponse 안전행정 = DepartmentSynonymResponse.builder()
+            .id(UUID.randomUUID().toString())
+            .synonym("안전행정")
             .build();
         DepartmentResponse 안전행정국 = DepartmentResponse.builder()
             .id(UUID.randomUUID().toString())
@@ -104,6 +117,7 @@ class DirectoryControllerTest {
             .number("4321")
             .phoneType(PhoneType.GROUP_DIALING)
             .branchId("test")
+            .synonyms(List.of(안전행정))
             .build();
 
         return DirectoryResponse.builder()
