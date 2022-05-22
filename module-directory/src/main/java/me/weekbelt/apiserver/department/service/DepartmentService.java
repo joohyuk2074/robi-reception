@@ -2,13 +2,12 @@ package me.weekbelt.apiserver.department.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
 import me.weekbelt.apiserver.department.dto.DepartmentResponse;
 import me.weekbelt.apiserver.department.dto.DepartmentUpdateRequest;
-import me.weekbelt.apiserver.exception.DirectoryErrorCode;
-import me.weekbelt.apiserver.exception.DirectoryException;
 import me.weekbelt.persistence.department.Department;
 import me.weekbelt.persistence.department.DepartmentTree;
 import me.weekbelt.persistence.department.service.DepartmentDataService;
@@ -70,6 +69,13 @@ public class DepartmentService {
     public DepartmentResponse update(String departmentId, DepartmentUpdateRequest updateRequest) {
         Department department = departmentDataService.getById(departmentId);
         department.update(updateRequest);
+        return DepartmentMapper.toDepartmentResponse(department);
+    }
+
+    @Transactional
+    public DepartmentResponse addSynonyms(String departmentId, List<String> synonyms) {
+        Department department = departmentDataService.getById(departmentId);
+        department.addSynonyms(synonyms);
         return DepartmentMapper.toDepartmentResponse(department);
     }
 }

@@ -1,9 +1,17 @@
 package me.weekbelt.persistence.department;
 
+import static java.util.stream.Collectors.toSet;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +37,9 @@ public class Department {
 
     private String branchId;
 
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<DepartmentSynonym> departmentSynonyms = new HashSet<>();
+
     @Builder
     public Department(String id, String name, Phone phone, String branchId) {
         this.id = id;
@@ -49,5 +60,24 @@ public class Department {
         if (!ObjectUtils.isEmpty(updateRequest.getPhoneType())) {
             this.phone.updatePhoneType(updateRequest.getPhoneType());
         }
+    }
+
+    public void addSynonyms(List<String> synonyms) {
+        Set<DepartmentSynonym> departmentSynonyms = Set.copyOf(synonyms).stream()
+            .filter(StringUtils::hasText)
+            .map(this::createDepartmentSynonym)
+            .collect(toSet());
+
+        this.departmentSynonyms.clear();
+        this.departmentSynonyms.addAll(departmentSynonyms);
+    }
+
+    private DepartmentSynonym createDepartmentSynonym(String synonym) {
+        DepartmentSynonym departmentSynonym = DepartmentSynonym.builder()
+            .id(UUID.randomUUID().toString())
+            .synonym(synonym)
+            .build();
+        departmentSynonym.setDepartment(this);
+        return departmentSynonym;
     }
 }

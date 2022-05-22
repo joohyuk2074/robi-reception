@@ -1,5 +1,6 @@
 package me.weekbelt.apiserver.department.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,4 +22,6 @@ public class DepartmentResponse {
     private PhoneType phoneType;
 
     private String branchId;
+
+    private List<String> synonyms;
 }

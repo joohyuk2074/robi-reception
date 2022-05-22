@@ -15,7 +15,6 @@ import me.weekbelt.persistence.department.repository.DepartmentRepository;
 import me.weekbelt.persistence.department.repository.DepartmentTreeRepository;
 import me.weekbelt.persistence.department.service.DepartmentDataService;
 import me.weekbelt.persistence.department.service.DepartmentTreeDataService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -106,9 +105,23 @@ public class DepartmentServiceTest {
         DepartmentResponse updatedDepartment = departmentService.update(rootDepartment.getId(), updateRequest);
 
         // then
-        Assertions.assertThat(updatedDepartment.getName()).isEqualTo("수정된부서");
-        Assertions.assertThat(updatedDepartment.getNumber()).isEqualTo("3001");
-        Assertions.assertThat(updatedDepartment.getPhoneType()).isEqualTo(PhoneType.GROUP_DIALING);
+        assertThat(updatedDepartment.getName()).isEqualTo("수정된부서");
+        assertThat(updatedDepartment.getNumber()).isEqualTo("3001");
+        assertThat(updatedDepartment.getPhoneType()).isEqualTo(PhoneType.GROUP_DIALING);
+    }
+
+    @Test
+    @DisplayName("Department에 동의어를 추가한다")
+    public void add_department_synonyms() {
+        // given
+        Department rootDepartment = createRootDepartment();
+        List<String> synonyms = List.of("최상위", "최상위", "최상");
+
+        // when
+        DepartmentResponse departmentResponse = departmentService.addSynonyms(rootDepartment.getId(), synonyms);
+
+        // then
+        assertThat(departmentResponse.getSynonyms().size()).isEqualTo(2);
     }
 
     private Department createRootDepartment() {

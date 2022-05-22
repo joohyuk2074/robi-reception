@@ -1,5 +1,7 @@
 package me.weekbelt.apiserver.department.controller;
 
+import java.util.List;
+import java.util.Set;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
@@ -32,5 +34,11 @@ public class DepartmentController {
     @ResponseStatus(code = HttpStatus.OK)
     public DepartmentResponse update(@RequestBody @Valid DepartmentUpdateRequest departmentUpdateRequest, @PathVariable String departmentId) {
         return departmentService.update(departmentId, departmentUpdateRequest);
+    }
+
+    @PostMapping("/v1/departments/{departmentId}/synonyms")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public DepartmentResponse addSynonyms(@PathVariable String departmentId, List<String> synonyms) {
+        return departmentService.addSynonyms(departmentId, synonyms);
     }
 }
