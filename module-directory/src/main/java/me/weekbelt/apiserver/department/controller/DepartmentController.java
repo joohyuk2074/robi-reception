@@ -28,9 +28,9 @@ public class DepartmentController {
         return departmentService.save(departmentCreateRequest);
     }
 
-    @PatchMapping("/v1/departments/{id}")
+    @PatchMapping("/v1/departments/{departmentId}")
     @ResponseStatus(code = HttpStatus.OK)
-    public DepartmentResponse update(@RequestBody @Valid DepartmentUpdateRequest departmentUpdateRequest, @PathVariable String id) {
-        return departmentService.update(id, departmentUpdateRequest);
+    public DepartmentResponse update(@RequestBody @Valid DepartmentUpdateRequest departmentUpdateRequest, @PathVariable String departmentId) {
+        return departmentService.update(departmentId, departmentUpdateRequest);
     }
 }

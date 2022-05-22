@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
 import me.weekbelt.apiserver.department.dto.DepartmentResponse;
 import me.weekbelt.apiserver.department.dto.DepartmentUpdateRequest;
+import me.weekbelt.apiserver.exception.DirectoryErrorCode;
+import me.weekbelt.apiserver.exception.DirectoryException;
 import me.weekbelt.persistence.department.Department;
 import me.weekbelt.persistence.department.DepartmentTree;
 import me.weekbelt.persistence.department.service.DepartmentDataService;
