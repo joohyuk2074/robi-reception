@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import me.weekbelt.persistence.department.Department;
-import me.weekbelt.persistence.department.DepartmentTree;
 import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
 import me.weekbelt.apiserver.department.dto.DepartmentResponse;
+import me.weekbelt.apiserver.department.dto.DepartmentUpdateRequest;
+import me.weekbelt.persistence.department.Department;
+import me.weekbelt.persistence.department.DepartmentTree;
 import me.weekbelt.persistence.department.service.DepartmentDataService;
 import me.weekbelt.persistence.department.service.DepartmentTreeDataService;
 import me.weekbelt.persistence.mapper.DepartmentMapper;
@@ -61,5 +62,12 @@ public class DepartmentService {
         departmentTrees.add(departmentTree);
 
         return departmentTrees;
+    }
+
+    @Transactional
+    public DepartmentResponse update(String departmentId, DepartmentUpdateRequest updateRequest) {
+        Department department = departmentDataService.getById(departmentId);
+        department.update(updateRequest);
+        return DepartmentMapper.toDepartmentResponse(department);
     }
 }

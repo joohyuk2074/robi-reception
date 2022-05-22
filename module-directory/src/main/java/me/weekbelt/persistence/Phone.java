@@ -21,4 +21,12 @@ public class Phone {
 
     @Enumerated(EnumType.STRING)
     private PhoneType phoneType;
+
+    public void updateNumber(String number) {
+        this.number = number;
+    }
+
+    public void updatePhoneType(PhoneType phoneType) {
+        this.phoneType = phoneType;
+    }
 }

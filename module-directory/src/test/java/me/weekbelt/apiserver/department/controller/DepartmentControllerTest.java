@@ -1,6 +1,7 @@
 package me.weekbelt.apiserver.department.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -10,6 +11,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -17,10 +19,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
-import me.weekbelt.apiserver.department.service.DepartmentService;
-import me.weekbelt.persistence.PhoneType;
 import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
 import me.weekbelt.apiserver.department.dto.DepartmentResponse;
+import me.weekbelt.apiserver.department.dto.DepartmentUpdateRequest;
+import me.weekbelt.apiserver.department.service.DepartmentService;
+import me.weekbelt.persistence.PhoneType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -109,6 +112,60 @@ class DepartmentControllerTest {
                 fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)"),
                 fieldWithPath("parentId").description("상위 부서 식별자 ID"),
                 fieldWithPath("branchId").description("브랜치 ID")
+            ),
+            responseFields(
+                fieldWithPath("id").description("부서의 식별 id"),
+                fieldWithPath("name").description("부서명"),
+                fieldWithPath("number").description("부서 번호"),
+                fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)"),
+                fieldWithPath("branchId").description("브랜치 ID")
+            ));
+    }
+
+    @Test
+    @DisplayName("Department를 수정한다")
+    public void update_department_success() throws Exception {
+        // given
+        DepartmentResponse departmentResponse = DepartmentResponse.builder()
+            .id(UUID.randomUUID().toString())
+            .name("수지구청")
+            .number("1234")
+            .phoneType(PhoneType.INWARD_DIALING)
+            .branchId("test")
+            .build();
+
+        given(departmentService.update(anyString(), any(DepartmentUpdateRequest.class))).willReturn(departmentResponse);
+
+        DepartmentUpdateRequest departmentUpdateRequest = DepartmentUpdateRequest.builder()
+            .name("수지구청")
+            .number("1234")
+            .phoneType(PhoneType.INWARD_DIALING)
+            .build();
+
+        // when
+        ResultActions resultActions = mockMvc.perform(patch(DEPARTMENT_BASE_URL + "/{id}", UUID.randomUUID().toString())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(objectMapper.writeValueAsString(departmentUpdateRequest)));
+
+        // then
+        resultActions
+            .andDo(getUpdateDepartmentApiDocument())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("id").isNotEmpty())
+            .andExpect(jsonPath("name").value("수지구청"))
+            .andExpect(jsonPath("number").value("1234"))
+            .andExpect(jsonPath("phoneType").value("INWARD_DIALING"))
+            .andExpect(jsonPath("branchId").value("test"));
+    }
+
+    private RestDocumentationResultHandler getUpdateDepartmentApiDocument() {
+        return document("department",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestFields(
+                fieldWithPath("name").description("부서명"),
+                fieldWithPath("number").description("부서 번호"),
+                fieldWithPath("phoneType").description("부서 번호 타입(내선, 외선, 그룹)")
             ),
             responseFields(
                 fieldWithPath("id").description("부서의 식별 id"),

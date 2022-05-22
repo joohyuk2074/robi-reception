@@ -4,16 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.UUID;
+import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
+import me.weekbelt.apiserver.department.dto.DepartmentResponse;
+import me.weekbelt.apiserver.department.dto.DepartmentUpdateRequest;
 import me.weekbelt.persistence.Phone;
 import me.weekbelt.persistence.PhoneType;
 import me.weekbelt.persistence.department.Department;
 import me.weekbelt.persistence.department.DepartmentTree;
-import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
-import me.weekbelt.apiserver.department.dto.DepartmentResponse;
 import me.weekbelt.persistence.department.repository.DepartmentRepository;
 import me.weekbelt.persistence.department.repository.DepartmentTreeRepository;
 import me.weekbelt.persistence.department.service.DepartmentDataService;
 import me.weekbelt.persistence.department.service.DepartmentTreeDataService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -87,6 +89,26 @@ public class DepartmentServiceTest {
 
         List<DepartmentTree> departmentTrees = departmentTreeDataService.getByDescendant(departmentResponse.getId());
         assertThat(departmentTrees.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("최상위 부서 정보를 수정")
+    public void update_department_info() {
+        // given
+        Department rootDepartment = createRootDepartment();
+        DepartmentUpdateRequest updateRequest = DepartmentUpdateRequest.builder()
+            .name("수정된부서")
+            .phoneType(PhoneType.GROUP_DIALING)
+            .number("3001")
+            .build();
+
+        // when
+        DepartmentResponse updatedDepartment = departmentService.update(rootDepartment.getId(), updateRequest);
+
+        // then
+        Assertions.assertThat(updatedDepartment.getName()).isEqualTo("수정된부서");
+        Assertions.assertThat(updatedDepartment.getNumber()).isEqualTo("3001");
+        Assertions.assertThat(updatedDepartment.getPhoneType()).isEqualTo(PhoneType.GROUP_DIALING);
     }
 
     private Department createRootDepartment() {
