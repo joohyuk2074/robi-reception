@@ -23,4 +23,9 @@ public class DepartmentDataService {
         return departmentRepository.findById(departmentId)
             .orElseThrow(() -> new EntityNotFoundException("Could not find Department departmentId: " + departmentId));
     }
+
+    @Transactional
+    public void delete(Department department) {
+        departmentRepository.delete(department);
+    }
 }

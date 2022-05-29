@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
 import me.weekbelt.apiserver.department.dto.DepartmentResponse;
 import me.weekbelt.apiserver.department.dto.DepartmentUpdateRequest;
+import me.weekbelt.apiserver.exception.DirectoryErrorCode;
+import me.weekbelt.apiserver.exception.DirectoryException;
 import me.weekbelt.persistence.department.Department;
 import me.weekbelt.persistence.department.DepartmentSynonym;
 import me.weekbelt.persistence.department.DepartmentTree;
@@ -73,6 +75,25 @@ public class DepartmentService {
         Department department = departmentDataService.getById(departmentId);
         department.update(updateRequest);
         return DepartmentMapper.toDepartmentResponse(department);
+    }
+
+    @Transactional
+    public void delete(String departmentId) {
+        if (!deletable(departmentId)) {
+            throw new DirectoryException(DirectoryErrorCode.CANNOT_DELETE_DEPARTMENT, "Sub-departments or employees exist");
+        }
+
+        List<DepartmentTree> departmentTrees = departmentTreeDataService.getByDescendant(departmentId);
+        departmentTreeDataService.deleteAll(departmentTrees);
+
+        Department department = departmentDataService.getById(departmentId);
+        departmentDataService.delete(department);
+    }
+
+    private boolean deletable(String departmentId) {
+        List<DepartmentTree> departmentTrees = departmentTreeDataService.getByAncestor(departmentId);
+        return departmentTrees.stream()
+            .noneMatch(departmentTree -> departmentTree.getAncestor().equals(departmentId) && departmentTree.getDepth() != 0);
     }
 
     @Transactional

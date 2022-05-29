@@ -36,6 +36,12 @@ public class DepartmentController {
         return departmentService.update(departmentId, departmentUpdateRequest);
     }
 
+    @DeleteMapping("/v1/departments/{departmentId}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public void delete(@PathVariable String departmentId) {
+        departmentService.delete(departmentId);
+    }
+
     @PostMapping("/v1/departments/{departmentId}/synonyms")
     @ResponseStatus(code = HttpStatus.CREATED)
     public DepartmentResponse addSynonyms(@PathVariable String departmentId, List<String> synonyms) {

@@ -16,3 +16,4 @@ spring:
       hibernate:
         format_sql: true
         jdbc.lob.non_contextual_creation: true
+    database: mysql

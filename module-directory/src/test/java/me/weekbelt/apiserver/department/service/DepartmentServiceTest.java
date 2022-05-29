@@ -2,13 +2,17 @@ package me.weekbelt.apiserver.department.service;
 
 import static java.util.Collections.EMPTY_LIST;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.BDDMockito.given;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import javax.persistence.EntityNotFoundException;
 import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
 import me.weekbelt.apiserver.department.dto.DepartmentResponse;
 import me.weekbelt.apiserver.department.dto.DepartmentUpdateRequest;
+import me.weekbelt.apiserver.exception.DirectoryException;
 import me.weekbelt.persistence.Phone;
 import me.weekbelt.persistence.PhoneType;
 import me.weekbelt.persistence.department.Department;
@@ -23,11 +27,15 @@ import me.weekbelt.persistence.department.service.DepartmentTreeDataService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
+@ExtendWith(MockitoExtension.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @DataJpaTest
 public class DepartmentServiceTest {
@@ -43,6 +51,7 @@ public class DepartmentServiceTest {
 
     private DepartmentDataService departmentDataService;
 
+    @SpyBean
     private DepartmentTreeDataService departmentTreeDataService;
 
     private DepartmentSynonymDataService departmentSynonymDataService;
@@ -52,7 +61,7 @@ public class DepartmentServiceTest {
     @BeforeEach
     public void initClientDepartmentService() {
         departmentDataService = new DepartmentDataService(departmentRepository);
-        departmentTreeDataService = new DepartmentTreeDataService(departmentTreeRepository);
+//        departmentTreeDataService = new DepartmentTreeDataService(departmentTreeRepository);
         departmentSynonymDataService = new DepartmentSynonymDataService(departmentSynonymRepository);
         departmentService = new DepartmentService(departmentDataService, departmentTreeDataService, departmentSynonymDataService);
     }
@@ -119,6 +128,40 @@ public class DepartmentServiceTest {
         assertThat(updatedDepartment.getName()).isEqualTo("수정된부서");
         assertThat(updatedDepartment.getNumber()).isEqualTo("3001");
         assertThat(updatedDepartment.getPhoneType()).isEqualTo(PhoneType.GROUP_DIALING);
+    }
+
+    @Test
+    @DisplayName("부서 삭제를 성공한다")
+    public void delete_department_success() {
+        // given
+        Department rootDepartment = createRootDepartment(EMPTY_LIST);
+
+        // when
+        departmentService.delete(rootDepartment.getId());
+
+        // then
+        Throwable throwable = catchThrowable(() -> departmentDataService.getById(rootDepartment.getId()));
+        assertThat(throwable).isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("하위 부서 혹은 직원이 존재하기때문에 부서 삭제를 실패한다")
+    public void delete_department_fail_sub_directory_exists() {
+        // given
+        Department rootDepartment = createRootDepartment(List.of("최상, 최상위 부서"));
+
+        DepartmentTree departmentTree = DepartmentTree.builder()
+            .ancestor(rootDepartment.getId())
+            .descendant("123")
+            .depth(1)
+            .build();
+        given(departmentTreeDataService.getByAncestor(rootDepartment.getId())).willReturn(List.of(departmentTree));
+
+        // when
+        Throwable thrown = catchThrowable(() -> departmentService.delete(rootDepartment.getId()));
+
+        // then
+        assertThat(thrown).isInstanceOf(DirectoryException.class);
     }
 
     @Test

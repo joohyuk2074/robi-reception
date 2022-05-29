@@ -9,4 +9,6 @@ public interface DepartmentTreeRepository extends JpaRepository<DepartmentTree, 
     List<DepartmentTree> findByDescendant(String descendant);
 
     List<DepartmentTree> findByAncestorAndDepth(String ancestor, int depth);
+
+    List<DepartmentTree> findByAncestor(String ancestor);
 }

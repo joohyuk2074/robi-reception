@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum DirectoryErrorCode implements IErrorCode {
 
-    CANNOT_CHANGE_PARENT_DEPARTMENT(HttpStatus.BAD_REQUEST, "directory-001", "Cannot change the parent department");
+    CANNOT_CHANGE_PARENT_DEPARTMENT(HttpStatus.BAD_REQUEST, "directory-001", "Cannot change the parent department"),
+    CANNOT_DELETE_DEPARTMENT(HttpStatus.BAD_REQUEST, "directory-002", "Cannot delete department");
 
     private final HttpStatus httpStatus;
 

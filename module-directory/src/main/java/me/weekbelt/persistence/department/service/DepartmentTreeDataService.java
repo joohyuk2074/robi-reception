@@ -23,7 +23,18 @@ public class DepartmentTreeDataService {
         departmentTreeRepository.saveAll(departmentTrees);
     }
 
+    @Transactional(readOnly = true)
     public List<DepartmentTree> getByAncestorAndDepth(String parentDepartmentId, int depth) {
         return departmentTreeRepository.findByAncestorAndDepth(parentDepartmentId, depth);
+    }
+
+    @Transactional(readOnly = true)
+    public List<DepartmentTree> getByAncestor(String ancestor) {
+        return departmentTreeRepository.findByAncestor(ancestor);
+    }
+
+    @Transactional
+    public void deleteAll(List<DepartmentTree> departmentTrees) {
+        departmentTreeRepository.deleteAll(departmentTrees);
     }
 }
