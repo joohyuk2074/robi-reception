@@ -25,7 +25,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @DataJpaTest
-public class DirectoryServiceTest {
+public class DirectoryQueryServiceTest {
 
     @Autowired
     private DepartmentRepository departmentRepository;
@@ -37,13 +37,13 @@ public class DirectoryServiceTest {
 
     private DepartmentTreeDataService departmentTreeDataService;
 
-    private DirectoryService directoryService;
+    private DirectoryQueryService directoryQueryService;
 
     @BeforeEach
     public void initDirectoryService() {
         departmentDataService = new DepartmentDataService(departmentRepository);
         departmentTreeDataService = new DepartmentTreeDataService(departmentTreeRepository);
-        directoryService = new DirectoryService(departmentDataService, departmentTreeDataService);
+        directoryQueryService = new DirectoryQueryService(departmentDataService, departmentTreeDataService);
         createDirectory();
     }
 
@@ -54,7 +54,7 @@ public class DirectoryServiceTest {
         String rootDepartmentId = "rootId";
 
         // when
-        DirectoryResponse directoryResponse = directoryService.getDirectory(rootDepartmentId);
+        DirectoryResponse directoryResponse = directoryQueryService.getDirectory(rootDepartmentId);
 
         // then
         List<DepartmentResponse> departmentResponses = directoryResponse.getDepartmentResponses();

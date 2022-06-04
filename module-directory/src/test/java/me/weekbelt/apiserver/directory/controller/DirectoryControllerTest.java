@@ -19,7 +19,7 @@ import java.util.UUID;
 import me.weekbelt.apiserver.department.dto.DepartmentResponse;
 import me.weekbelt.apiserver.department.dto.DepartmentSynonymResponse;
 import me.weekbelt.apiserver.directory.dto.DirectoryResponse;
-import me.weekbelt.apiserver.directory.service.DirectoryService;
+import me.weekbelt.apiserver.directory.service.DirectoryQueryService;
 import me.weekbelt.persistence.PhoneType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,7 +47,7 @@ class DirectoryControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private DirectoryService directoryService;
+    private DirectoryQueryService directoryQueryService;
 
     @BeforeEach
     public void before(WebApplicationContext ctx, RestDocumentationContextProvider restDocumentationContextProvider) {
@@ -63,7 +63,7 @@ class DirectoryControllerTest {
     public void get_depth1_directory() throws Exception {
         // given
         DirectoryResponse directoryResponse = createDirectoryResponse();
-        given(directoryService.getDirectory(anyString())).willReturn(directoryResponse);
+        given(directoryQueryService.getDirectory(anyString())).willReturn(directoryResponse);
 
         // when
         ResultActions resultActions = mockMvc.perform(get(DIRECTORY_BASE_URL + "/{departmentId}", "departmentId"));

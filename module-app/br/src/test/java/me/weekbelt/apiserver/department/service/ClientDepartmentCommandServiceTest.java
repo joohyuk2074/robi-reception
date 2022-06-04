@@ -38,7 +38,8 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @DataJpaTest
-public class DepartmentServiceTest {
+class ClientDepartmentCommandServiceTest {
+
 
     @Autowired
     private DepartmentRepository departmentRepository;
@@ -56,14 +57,13 @@ public class DepartmentServiceTest {
 
     private DepartmentSynonymDataService departmentSynonymDataService;
 
-    private DepartmentService departmentService;
+    private ClientDepartmentCommandService departmentCommandService;
 
     @BeforeEach
     public void initClientDepartmentService() {
         departmentDataService = new DepartmentDataService(departmentRepository);
-//        departmentTreeDataService = new DepartmentTreeDataService(departmentTreeRepository);
         departmentSynonymDataService = new DepartmentSynonymDataService(departmentSynonymRepository);
-        departmentService = new DepartmentService(departmentDataService, departmentTreeDataService, departmentSynonymDataService);
+        departmentCommandService = new ClientDepartmentCommandService(departmentDataService, departmentTreeDataService, departmentSynonymDataService);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class DepartmentServiceTest {
             .build();
 
         // when
-        DepartmentResponse departmentResponse = departmentService.save(createRequest);
+        DepartmentResponse departmentResponse = departmentCommandService.save(createRequest);
 
         // then
         assertThat(departmentResponse.getId()).isNotEmpty();
@@ -101,7 +101,7 @@ public class DepartmentServiceTest {
             .build();
 
         // when
-        DepartmentResponse departmentResponse = departmentService.save(createRequest);
+        DepartmentResponse departmentResponse = departmentCommandService.save(createRequest);
 
         // then
         assertThat(departmentResponse.getId()).isNotEmpty();
@@ -122,7 +122,7 @@ public class DepartmentServiceTest {
             .build();
 
         // when
-        DepartmentResponse updatedDepartment = departmentService.update(rootDepartment.getId(), updateRequest);
+        DepartmentResponse updatedDepartment = departmentCommandService.update(rootDepartment.getId(), updateRequest);
 
         // then
         assertThat(updatedDepartment.getName()).isEqualTo("수정된부서");
@@ -137,7 +137,7 @@ public class DepartmentServiceTest {
         Department rootDepartment = createRootDepartment(EMPTY_LIST);
 
         // when
-        departmentService.delete(rootDepartment.getId());
+        departmentCommandService.delete(rootDepartment.getId());
 
         // then
         Throwable throwable = catchThrowable(() -> departmentDataService.getById(rootDepartment.getId()));
@@ -158,7 +158,7 @@ public class DepartmentServiceTest {
         given(departmentTreeDataService.getByAncestor(rootDepartment.getId())).willReturn(List.of(departmentTree));
 
         // when
-        Throwable thrown = catchThrowable(() -> departmentService.delete(rootDepartment.getId()));
+        Throwable thrown = catchThrowable(() -> departmentCommandService.delete(rootDepartment.getId()));
 
         // then
         assertThat(thrown).isInstanceOf(DirectoryException.class);
@@ -172,7 +172,7 @@ public class DepartmentServiceTest {
         List<String> synonyms = List.of("최상위", "최상위", "최상");
 
         // when
-        DepartmentResponse departmentResponse = departmentService.addSynonyms(rootDepartment.getId(), synonyms);
+        DepartmentResponse departmentResponse = departmentCommandService.addSynonyms(rootDepartment.getId(), synonyms);
 
         // then
         assertThat(departmentResponse.getSynonyms().size()).isEqualTo(2);
@@ -189,7 +189,7 @@ public class DepartmentServiceTest {
             .toList();
 
         // when
-        DepartmentResponse departmentResponse = departmentService.deleteSynonym(rootDepartment.getId(), departmentSynonymIds.get(0));
+        DepartmentResponse departmentResponse = departmentCommandService.deleteSynonym(rootDepartment.getId(), departmentSynonymIds.get(0));
 
         // then
         assertThat(departmentResponse.getSynonyms().size()).isEqualTo(1);

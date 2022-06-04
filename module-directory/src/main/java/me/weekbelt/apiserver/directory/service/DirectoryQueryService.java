@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class DirectoryService {
+public class DirectoryQueryService {
 
     private final DepartmentDataService departmentDataService;
 

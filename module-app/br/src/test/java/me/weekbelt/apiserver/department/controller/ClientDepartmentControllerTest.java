@@ -23,7 +23,7 @@ import java.util.UUID;
 import me.weekbelt.apiserver.department.dto.DepartmentCreateRequest;
 import me.weekbelt.apiserver.department.dto.DepartmentResponse;
 import me.weekbelt.apiserver.department.dto.DepartmentUpdateRequest;
-import me.weekbelt.apiserver.department.service.DepartmentService;
+import me.weekbelt.apiserver.department.service.ClientDepartmentCommandService;
 import me.weekbelt.persistence.PhoneType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,9 +42,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-@WebMvcTest(DepartmentController.class)
+@WebMvcTest(ClientDepartmentController.class)
 @ExtendWith({RestDocumentationExtension.class})
-class DepartmentControllerTest {
+class ClientDepartmentControllerTest {
 
     private static final String DEPARTMENT_BASE_URL = "/admin/v1/departments";
 
@@ -52,7 +52,7 @@ class DepartmentControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private DepartmentService departmentService;
+    private ClientDepartmentCommandService departmentCommandService;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -86,7 +86,7 @@ class DepartmentControllerTest {
             .synonyms(EMPTY_LIST)
             .build();
 
-        given(departmentService.save(any())).willReturn(departmentResponse);
+        given(departmentCommandService.save(any())).willReturn(departmentResponse);
 
         // when
         ResultActions resultActions = mockMvc.perform(post(DEPARTMENT_BASE_URL)
@@ -137,7 +137,7 @@ class DepartmentControllerTest {
             .branchId("test")
             .build();
 
-        given(departmentService.update(anyString(), any(DepartmentUpdateRequest.class))).willReturn(departmentResponse);
+        given(departmentCommandService.update(anyString(), any(DepartmentUpdateRequest.class))).willReturn(departmentResponse);
 
         DepartmentUpdateRequest departmentUpdateRequest = DepartmentUpdateRequest.builder()
             .name("수지구청")
