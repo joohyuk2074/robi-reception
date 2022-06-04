@@ -35,6 +35,7 @@ public class Department {
     @Embedded
     private Phone phone;
 
+    @Column(nullable = false)
     private String branchId;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
